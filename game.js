@@ -103,9 +103,44 @@ function startGame() { if (gameState === 'start') { console.log("Starting game..
 
 function endGame() {
     if (gameState !== 'gameOver') {
-        console.log("Game Over. Score:", score); gameState = 'gameOver'; gameOverScreen.classList.add('visible'); finalScoreDisplay.textContent = score; const messages = ["Technical Foul!", "Yellow Card for Diving!", "And the Oscar goes to...", "He felt that one!", "Called for Traveling (sideways)!", "Flopped too hard!", "Ref didn't buy it!"]; gameOverMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
-        pageWrapper.classList.add('shake'); setTimeout(() => { pageWrapper.classList.remove('shake'); }, 150);
-        prepareShareData(score); // Prepare share data *once* when game ends
+        console.log("Game Over. Score:", score);
+        gameState = 'gameOver';
+        gameOverScreen.classList.add('visible');
+        finalScoreDisplay.textContent = score;
+
+        // --- UPDATED Messages Array ---
+        const messages = [
+            "Technical Foul!", // Keep some classics
+            "Yellow Card for Diving!",
+            "And the Oscar goes to...",
+            "He felt that one!",
+            "Called for Traveling (sideways)!",
+            "Flopped too hard!",
+            "Ref didn't buy it!",
+            "Barely clipped a fingernail!", // New
+            "Looked like a gust of wind took him out!", // New
+            "Needs more drama classes.", // New
+            "Gravity seems selective today.", // New
+            "Did he practice that fall?", // New
+            "Someone check the replay... oh wait.", // New
+            "Clutching the wrong body part!", // New
+            "He's selling it like prime real estate!", // New
+            "Where's the stretcher?! ...Never mind.", // New
+            "A flop worthy of the highlight reel.", // New
+            "The simulation detected excessive simulation.", // New
+            "Even the commentators are laughing.", // New
+            "Pulled a hamstring... from the acting." // New
+        ];
+        // --- End UPDATED Messages ---
+
+        gameOverMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+
+        // Add shake effect to the page wrapper
+        pageWrapper.classList.add('shake');
+        setTimeout(() => { pageWrapper.classList.remove('shake'); }, 150);
+
+        // Prepare share data when game ends
+        prepareShareData(score);
     }
 }
 
