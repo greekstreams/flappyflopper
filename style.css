@@ -76,7 +76,7 @@ hr {
 .main-content {
     flex: 1; /* Allow main content to grow and push footer down */
     display: flex;
-    align-items: center; /* Vertically center columns */
+    align-items: flex-start; /* Align items to the top */
     justify-content: center; /* Center columns horizontally */
     padding: 30px 0;
     gap: 40px; /* Space between game and info */
@@ -86,9 +86,10 @@ hr {
 /* Game Column */
 .game-column {
     flex: 0 1 auto; /* Don't grow, shrink if needed, base on content */
-    display: flex; /* Use flex to easily center game container if needed */
-    justify-content: center;
-    align-items: center;
+    display: flex; /* Use flex */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally (button, game container) */
+    justify-content: flex-start; /* Align to the top */
 }
 
 /* Info Column */
@@ -135,54 +136,77 @@ hr {
 }
 
 
-/* --- Game Specific Styles (Keep previous styles, ensure positioning context) --- */
+/* --- Game Specific Styles --- */
 
-/* Find the #game-container rule */
+/* Game Container Itself */
 #game-container {
-    position: relative;
+    position: relative; /* Needed for overlays and score */
     border: 2px solid #444;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     width: 320px;
     height: 480px;
     overflow: hidden;
-    /* --- UPDATED Background --- */
-    background-color: #3a3f47; /* Dark fallback color - KEEP THIS */
-    /* REMOVE or COMMENT OUT these lines VVVVV */
-    /* background-image: url('basketball-court-bg.jpg'); */
-    /* background-size: cover; */
-    /* background-repeat: no-repeat; */
-    /* background-position: center center; */
-    /* --- End UPDATED Background --- */
-    margin: 0 auto;
+    background-color: #3a3f47; /* Fallback background */
+    /* Background image is handled by canvas drawing */
 }
 
 canvas { display: block; }
 
-#score-display { /* Position relative to #game-container */ position: absolute; top: 15px; left: 0; width: 100%; text-align: center; color: white; font-size: 24px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); z-index: 10; pointer-events: none; transition: transform 0.1s ease-out, color 0.1s ease-out; }
-#score-display.pop { transform: scale(1.2); color: #FFD700; }
+/* Score Display (Inside Game Container) */
+#score-display {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    text-align: center;
+    color: white;
+    font-size: 20px; /* Reduced size */
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    z-index: 10;
+    pointer-events: none;
+    transition: transform 0.1s ease-out, color 0.1s ease-out;
+}
+#score-display.pop { transform: scale(1.2) translateX(-50%); color: #FFD700; }
 
+/* Overlays (Start/Game Over) */
 #start-screen, #game-over-screen {
-    /* Position relative to #game-container */
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.7); color: white; display: flex; flex-direction: column;
     justify-content: center; align-items: center; text-align: center;
-    padding: 20px; box-sizing: border-box; z-index: 20;
+    padding: 20px; box-sizing: border-box; z-index: 20; /* Higher than score/toggle */
     opacity: 0; visibility: hidden; transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
     pointer-events: none;
 }
 #start-screen { padding-bottom: 40px; justify-content: center; }
 #start-screen.visible, #game-over-screen.visible { opacity: 1; visibility: visible; pointer-events: auto; }
 
-#start-screen h1, #game-over-screen h1 { font-size: 2.5em; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); }
+#start-screen h1, #game-over-screen h2 { font-size: 2.2em; margin-bottom: 15px; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); }
 #start-screen p, #game-over-screen p { font-size: 1.1em; margin-bottom: 10px; }
 
-#game-over-screen button#restart-button { /* Styles remain same */ padding: 12px 25px; font-size: 1.1em; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; margin-top: 15px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease, transform 0.1s ease; }
-#game-over-screen button#restart-button:hover { background-color: #45a049; }
-#game-over-screen button#restart-button:active { transform: scale(0.98); }
-#game-over-message { font-style: italic; margin-top: 15px; font-size: 1.2em; color: #ffdddd; }
+/* General Game Button Style (used on Game Over screen) */
+.game-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    margin-top: 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.game-button:hover { background-color: #45a049; }
+.game-button:active { transform: scale(0.98); }
+
+#game-over-message { font-style: italic; margin-top: 5px; margin-bottom: 15px; font-size: 1.2em; color: #ffdddd; }
 
 /* Share Button Styles */
-.share-section { margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px; width: 90%; /* Make slightly wider */ }
+.share-section { margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px; width: 90%; }
 .share-section p { font-size: 0.9em; margin-bottom: 10px; font-weight: bold; }
 .share-button { display: inline-block; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; color: white; text-align: center; font-size: 1.2em; margin: 5px 5px; text-decoration: none; transition: transform 0.2s ease, background-color 0.2s ease; border: none; cursor: pointer; vertical-align: middle; }
 .share-button:hover { transform: scale(1.1); }
@@ -192,8 +216,94 @@ canvas { display: block; }
 .copy-feedback.visible { opacity: 1; }
 
 /* Screen Shake */
-body.shake #game-container { /* Apply shake to game container */ animation: shake 0.15s linear; }
+/* Apply shake to the body or page-wrapper if game-container moves with it */
+.page-wrapper.shake #game-container {
+    animation: shake 0.15s linear;
+}
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-2px); } }
+
+
+/* Toggle Switch Styles */
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center label and switch */
+    margin-top: 15px; /* Space below game container */
+    width: 100%; /* Take width for centering */
+    max-width: 320px; /* Align with game width */
+}
+
+.toggle-label {
+    margin-right: 10px; /* Space between text and switch */
+    font-size: 0.9em;
+    color: #ccc; /* Lighter grey text */
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;  /* Width of the switch track */
+  height: 24px; /* Height of the switch track */
+  flex-shrink: 0; /* Prevent switch from shrinking */
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider track */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #5a6270; /* Default OFF background (dark grey) */
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+/* The slider knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; /* Height of the knob */
+  width: 18px;  /* Width of the knob */
+  left: 3px;    /* Initial left position (padding) */
+  bottom: 3px;  /* Initial bottom position (padding) */
+  background-color: white;
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+
+input:checked + .slider {
+  background-color: #0056b3; /* Dark blue for ON state */
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #0056b3; /* Optional focus style */
+}
+
+/* Move the knob when checked */
+input:checked + .slider:before {
+  -webkit-transform: translateX(20px); /* Move distance: track width - knob width - (2*padding) */
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 24px; /* Half the height for pill shape */
+}
+
+.slider.round:before {
+  border-radius: 50%; /* Circular knob */
+}
 
 
 /* --- Responsiveness --- */
@@ -213,6 +323,7 @@ body.shake #game-container { /* Apply shake to game container */ animation: shak
         order: 1; /* Show game first */
         width: 100%; /* Take full width */
         flex-basis: auto; /* Reset flex-basis */
+        align-items: center; /* Ensure content is centered */
     }
 
     .info-column {
@@ -236,103 +347,52 @@ body.shake #game-container { /* Apply shake to game container */ animation: shak
     .main-footer {
         font-size: 0.8em;
     }
+
+    .toggle-switch-container {
+        margin-top: 10px; /* Reduce space on mobile */
+        justify-content: flex-start; /* Align to left on mobile? Or keep center? */
+        padding-left: 10px; /* Add some padding if aligned left */
+        padding-right: 10px;
+    }
+     .toggle-label {
+         font-size: 0.85em; /* Slightly smaller text on mobile */
+     }
 }
-/* --- About Page Specific Styles --- */
+
+
+/* --- About Page Specific Styles --- (Keep these separate if possible) */
 
 .main-content .about-content-box {
-    background-color: #1f232a; /* Match header/footer/info-column */
-    padding: 30px 40px;       /* More padding than info-column */
+    background-color: #1f232a;
+    padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    width: 100%;              /* Take full width of container */
-    max-width: 800px;         /* Limit max width for readability */
-    margin: 20px auto;        /* Center the box within the container */
-    flex-grow: 0;             /* Don't allow flexbox to grow it */
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    flex-grow: 0;
     flex-shrink: 1;
-    /* No flex-basis needed as width/max-width control it */
 }
 
 .about-content-box h1 {
-    color: #ffffff;
-    margin-bottom: 20px;
-    font-size: 2em; /* Slightly larger for page title */
-    border-bottom: 1px solid #444b58;
-    padding-bottom: 15px;
-    text-align: center;
+    color: #ffffff; margin-bottom: 20px; font-size: 2em; border-bottom: 1px solid #444b58; padding-bottom: 15px; text-align: center;
 }
-
 .about-content-box h2 {
-    color: #ffffff;
-    margin-top: 25px; /* Add space above headings */
-    margin-bottom: 15px;
-    font-size: 1.6em;
-    border-bottom: 1px solid #444b58;
-    padding-bottom: 10px;
+    color: #ffffff; margin-top: 25px; margin-bottom: 15px; font-size: 1.6em; border-bottom: 1px solid #444b58; padding-bottom: 10px;
 }
+.about-content-box p { line-height: 1.7; margin-bottom: 15px; font-size: 1em; }
 
-.about-content-box p {
-    line-height: 1.7; /* Slightly more spacing for readability */
-    margin-bottom: 15px;
-    font-size: 1em;
-}
+.about-twitter-link { display: inline-block; background-color: #1DA1F2; color: white; padding: 8px 15px; border-radius: 5px; font-weight: 700; transition: background-color 0.2s ease, transform 0.1s ease; }
+.about-twitter-link i { margin-right: 8px; }
+.about-twitter-link:hover { background-color: #1a91da; text-decoration: none; transform: scale(1.03); }
 
-/* Style the Twitter link nicely */
-.about-twitter-link {
-    display: inline-block;
-    background-color: #1DA1F2; /* Twitter blue */
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-weight: 700;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-.about-twitter-link i {
-    margin-right: 8px;
-}
-.about-twitter-link:hover {
-    background-color: #1a91da;
-    text-decoration: none;
-    transform: scale(1.03);
-}
+.back-to-game-button { display: inline-block; padding: 12px 25px; font-size: 1.1em; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease, transform 0.1s ease; text-decoration: none; }
+.back-to-game-button:hover { background-color: #45a049; text-decoration: none; transform: scale(1.03); }
+.back-to-game-button:active { transform: scale(0.98); }
 
-/* Style the back-to-game button */
-.back-to-game-button {
-    display: inline-block;
-    padding: 12px 25px;
-    font-size: 1.1em;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
-    cursor: pointer;
-    background-color: #4CAF50; /* Match restart button */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    text-decoration: none;
-}
-.back-to-game-button:hover {
-    background-color: #45a049;
-    text-decoration: none;
-    transform: scale(1.03);
-}
-.back-to-game-button:active {
-    transform: scale(0.98);
-}
-
-/* Responsive adjustments for the about page content box if needed */
 @media (max-width: 768px) {
-    .main-content .about-content-box {
-        padding: 20px 25px; /* Reduce padding on smaller screens */
-        margin: 10px auto;
-    }
-    .about-content-box h1 {
-        font-size: 1.8em;
-    }
-    .about-content-box h2 {
-        font-size: 1.4em;
-    }
-    .about-content-box p {
-        font-size: 0.95em;
-    }
+    .main-content .about-content-box { padding: 20px 25px; margin: 10px auto; }
+    .about-content-box h1 { font-size: 1.8em; }
+    .about-content-box h2 { font-size: 1.4em; }
+    .about-content-box p { font-size: 0.95em; }
 }
