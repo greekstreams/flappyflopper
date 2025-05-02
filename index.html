@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="shortcut icon" href="favicon.ico"> 
-    <link rel="apple-touch-icon" href="apple-touch-icon.png"> 
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
     <!-- Google Font -->
@@ -17,33 +17,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Social Media Meta Tags -->
     <meta property="og:title" content="Flappy Flopper - The Vezenkov Foul-Drawing Game!" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://greekstreams.github.io/flappyflopper/" />
-    <meta property="og:image" content="https://greekstreams.github.io/flappyflopper/social-preview.jpg" />
-    <meta property="og:image:width" content="1200" /> <!-- Assuming standard 1200x630, adjust if different -->
-    <meta property="og:image:height" content="630" /> <!-- Assuming standard 1200x630, adjust if different -->
+    <meta property="og:url" content="https://greekstreams.github.io/flappyflopper/" /> <!-- Replace with your actual URL -->
+    <meta property="og:image" content="https://greekstreams.github.io/flappyflopper/social-preview.jpg" /> <!-- Replace with your actual image path -->
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:description" content="Tap to flop! Guide Sasha Vezenkov through a gauntlet of reaching hands in this hilarious Flappy Bird parody. How many fouls can you draw?" />
     <meta property="og:site_name" content="Flappy Flopper" />
-
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@DimiInsights" /> <!-- Replace if you have a different relevant Twitter handle -->
-    <meta name="twitter:creator" content="@DimiInsights" /> <!-- Replace if you have a different relevant Twitter handle -->
+    <meta name="twitter:site" content="@DimiInsights" /> <!-- Replace if needed -->
+    <meta name="twitter:creator" content="@DimiInsights" /> <!-- Replace if needed -->
     <meta name="twitter:title" content="Flappy Flopper - The Vezenkov Foul-Drawing Game!" />
     <meta name="twitter:description" content="Tap to flop! Guide Sasha Vezenkov through a gauntlet of reaching hands in this hilarious Flappy Bird parody. How many fouls can you draw?" />
-    <meta name="twitter:image" content="https://greekstreams.github.io/flappyflopper/social-preview.jpg" />
-
+    <meta name="twitter:image" content="https://greekstreams.github.io/flappyflopper/social-preview.jpg" /> <!-- Replace with your actual image path -->
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4GRDCX3FK1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
       gtag('config', 'G-4GRDCX3FK1');
     </script>
-
 </head>
 <body>
 
@@ -53,9 +50,7 @@
             <div class="container">
                 <h1 class="logo">Flappy Flopper</h1>
                 <nav class="main-nav">
-                    <!-- Placeholder links for future expansion -->
                     <a href="index.html">Game</a>
-                    
                     <a href="about.html">About</a>
                 </nav>
             </div>
@@ -64,22 +59,20 @@
         <main class="main-content container">
             <!-- Game Column -->
             <div class="game-column">
+
                 <div id="game-container">
                     <canvas id="gameCanvas" width="320" height="480"></canvas>
                     <!-- Start Screen -->
-                    <div id="start-screen">
-                        <!-- Content remains same -->
+                    <div id="start-screen" class="overlay visible">
                         <h1>Flappy Flopper</h1>
                         <p>Click or Tap to Flop!</p>
                         <p>(Avoid the hands)</p>
                     </div>
                     <!-- Game Over Screen -->
-                    <div id="game-over-screen">
-                        <!-- Content remains same -->
-                        <h1>Game Over!</h1>
+                    <div id="game-over-screen" class="overlay">
+                        <h2 id="game-over-message">Game Over!</h2>
                         <p>Fouls Drawn: <span id="final-score">0</span></p>
-                        <p id="game-over-message">Try again!</p>
-                        <button id="restart-button">Restart</button>
+                        <button id="restart-button" class="game-button">Restart</button>
                         <div class="share-section">
                             <p>Share Score:</p>
                             <a href="#" id="share-twitter" class="share-button twitter" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
@@ -88,10 +81,21 @@
                             <span id="copy-feedback" class="copy-feedback"></span>
                         </div>
                     </div>
-                    <!-- Score Display -->
+                    <!-- Score Display (inside game-container) -->
                     <div id="score-display">Fouls Drawn: 0</div>
+                </div><!-- End #game-container -->
+
+                <!-- ****** TOGGLE SWITCH ****** -->
+                <div class="toggle-switch-container">
+                    <label for="hitboxToggle" class="toggle-label">Show Hitboxes (Easy Mode):</label>
+                    <label class="switch">
+                        <input type="checkbox" id="hitboxToggle">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
-            </div>
+                <!-- ****** END TOGGLE SWITCH ****** -->
+
+            </div><!-- End .game-column -->
 
             <!-- Info Column -->
             <aside class="info-column">
@@ -109,7 +113,7 @@
 
         <footer class="main-footer">
             <div class="container">
-                <p>&copy; 2025 Flappy Flopper. All Rights Reserved (Probably). | <a href="privacy.html">Privacy Policy</a></p>
+                <p>© 2025 Flappy Flopper. All Rights Reserved (Probably). | <a href="privacy.html">Privacy Policy</a></p>
             </div>
         </footer>
 
