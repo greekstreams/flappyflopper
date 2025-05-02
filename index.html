@@ -75,8 +75,14 @@
                         <button id="restart-button" class="game-button">Restart</button>
                         <div class="share-section">
                             <p>Share Score:</p>
-                            <a href="#" id="share-twitter" class="share-button twitter" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
-                            <a href="#" id="share-facebook" class="share-button facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                            <!-- Generic Share Button (shown if Web Share API available) -->
+                            <button id="share-native" class="share-button native-share hidden">
+                                <i class="fas fa-share-alt"></i> Share
+                            </button>
+                            <!-- Fallback Buttons (shown if Web Share API NOT available) -->
+                            <a href="#" id="share-twitter" class="share-button twitter fallback-share hidden" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                            <a href="#" id="share-facebook" class="share-button facebook fallback-share hidden" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                            <!-- Copy Link Button (Always shown) -->
                             <button id="copy-link" class="share-button copy"><i class="fas fa-link"></i></button>
                             <span id="copy-feedback" class="copy-feedback"></span>
                         </div>
@@ -85,15 +91,14 @@
                     <div id="score-display">Fouls Drawn: 0</div>
                 </div><!-- End #game-container -->
 
-                <!-- ****** TOGGLE SWITCH ****** -->
+                <!-- Toggle Switch -->
                 <div class="toggle-switch-container">
-                    <label for="hitboxToggle" class="toggle-label">Show Hitboxes (Easy Mode):</label>
+                    <label for="hitboxToggle" class="toggle-label">Show Hitboxes (Easier):</label>
                     <label class="switch">
                         <input type="checkbox" id="hitboxToggle">
                         <span class="slider round"></span>
                     </label>
                 </div>
-                <!-- ****** END TOGGLE SWITCH ****** -->
 
             </div><!-- End .game-column -->
 
