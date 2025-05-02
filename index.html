@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Flappy Flopper - Vezenkov Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <header class="main-header">
+            <div class="container">
+                <h1 class="logo">Flappy Flopper</h1>
+                <nav class="main-nav">
+                    <!-- Placeholder links for future expansion -->
+                    <a href="index.html">Game</a>
+                    
+                    <a href="about.html">About</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content container">
+            <!-- Game Column -->
+            <div class="game-column">
+                <div id="game-container">
+                    <canvas id="gameCanvas" width="320" height="480"></canvas>
+                    <!-- Start Screen -->
+                    <div id="start-screen">
+                        <!-- Content remains same -->
+                        <h1>Flappy Flopper</h1>
+                        <p>Click or Tap to Flop!</p>
+                        <p>(Avoid the hands)</p>
+                    </div>
+                    <!-- Game Over Screen -->
+                    <div id="game-over-screen">
+                        <!-- Content remains same -->
+                        <h1>Game Over!</h1>
+                        <p>Fouls Drawn: <span id="final-score">0</span></p>
+                        <p id="game-over-message">Try again!</p>
+                        <button id="restart-button">Restart</button>
+                        <div class="share-section">
+                            <p>Share Score:</p>
+                            <a href="#" id="share-twitter" class="share-button twitter" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                            <a href="#" id="share-facebook" class="share-button facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                            <button id="copy-link" class="share-button copy"><i class="fas fa-link"></i></button>
+                            <span id="copy-feedback" class="copy-feedback"></span>
+                        </div>
+                    </div>
+                    <!-- Score Display -->
+                    <div id="score-display">Fouls Drawn: 0</div>
+                </div>
+            </div>
+
+            <!-- Info Column -->
+            <aside class="info-column">
+                <h2>The Art of the Flop</h2>
+                <p>Navigate Sasha Vezenkov through the treacherous reaching hands. Click or Tap (or use Spacebar) to execute a tactical flop and gain altitude. Draw as many fouls as you can!</p>
+                <p>This highly sophisticated simulation is based on countless hours of game tape analysis.</p>
+                <hr>
+                <p>Game concept by DimiInsights. Based on the Flappy Bird phenomenon.</p>
+                <p>Follow future developments: <a href="https://x.com/DimiInsights" target="_blank">@DimiInsights</a></p>
+                <hr>
+                 <!-- Placeholder for Ads later -->
+                 <div class="ad-placeholder">Future Ad Space</div>
+            </aside>
+        </main>
+
+        <footer class="main-footer">
+            <div class="container">
+                <p>&copy; 2025 Flappy Flopper. All Rights Reserved (Probably). | <a href="privacy.html">Privacy Policy</a></p>
+            </div>
+        </footer>
+
+    </div> <!-- End page-wrapper -->
+
+    <script src="game.js"></script>
+</body>
+</html>
