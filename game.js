@@ -10,10 +10,12 @@ const restartButton = document.getElementById('restart-button');
 const gameContainer = document.getElementById('game-container');
 const pageWrapper = document.querySelector('.page-wrapper'); // For shake effect
 // Share Elements
+const shareNativeBtn = document.getElementById('share-native'); // New generic share button
 const shareTwitterBtn = document.getElementById('share-twitter');
 const shareFacebookBtn = document.getElementById('share-facebook');
 const copyLinkBtn = document.getElementById('copy-link');
 const copyFeedbackEl = document.getElementById('copy-feedback');
+const fallbackShareButtons = document.querySelectorAll('.fallback-share'); // Select T/FB buttons
 // Hitbox Toggle Checkbox
 const hitboxToggleCheckbox = document.getElementById('hitboxToggle');
 
@@ -52,6 +54,7 @@ backgroundImg.onerror = () => assetLoaded('background', false);
 const GAME_URL = window.location.href; // Or your specific game URL
 const BASE_SHARE_TEXT = "I drew {score} fouls in Flappy Flopper! Can you beat my score?";
 const TWITTER_HASHTAGS = "FlappyFlopper,Vezenkov,paobc,olympiacosbc"; // Comma-separated
+const SHARE_TITLE = "Flappy Flopper Score!"; // Title for Web Share API
 // --- End Share Configuration ---
 
 // Game variables
@@ -113,6 +116,17 @@ function initGame() {
     scoreDisplay.style.display = 'none'; copyFeedbackEl.classList.remove('visible');
     pageWrapper.classList.remove('shake'); // Ensure shake is removed on restart
 
+    // --- Share Button Visibility Setup ---
+    if (navigator.share) {
+        console.log("Web Share API supported.");
+        shareNativeBtn.classList.remove('hidden'); // Show native share button
+        fallbackShareButtons.forEach(btn => btn.classList.add('hidden')); // Hide T/FB buttons
+    } else {
+        console.log("Web Share API not supported, showing fallback links.");
+        shareNativeBtn.classList.add('hidden'); // Hide native share button
+        fallbackShareButtons.forEach(btn => btn.classList.remove('hidden')); // Show T/FB buttons
+    }
+
     // Set initial state of the toggle switch based on the variable
     hitboxToggleCheckbox.checked = showHitboxes;
 
@@ -145,7 +159,8 @@ function endGame() {
         pageWrapper.classList.add('shake');
         setTimeout(() => { pageWrapper.classList.remove('shake'); }, 150);
 
-        updateShareData(score);
+        // Prepare share data when game ends
+        prepareShareData(score);
     }
 }
 
@@ -200,15 +215,10 @@ function update() {
         const playerRect = { x: player.x, y: player.y, width: player.width, height: player.height };
 
         // --- Hitboxes (Full Image) ---
-        // Ensure current positions are initialized before calculating hitboxes
         if (typeof obs.currentTopImageY === 'undefined') obs.currentTopImageY = obs.baseTopY;
         if (typeof obs.currentBottomImageY === 'undefined') obs.currentBottomImageY = obs.baseBottomY;
-
-        // Calculate actual height to use for hitbox (prioritize loaded image dimensions)
         const currentTopHeight = obstacleTopImg.naturalHeight || obs.topImageHeight || OBSTACLE_IMG_HEIGHT;
         const currentBottomHeight = obstacleBottomImg.naturalHeight || obs.bottomImageHeight || OBSTACLE_IMG_HEIGHT;
-
-        // Define hitbox rectangles based on current position, width, and calculated height
         obs.hitboxRects = [
             { x: obs.x, y: obs.currentTopImageY, width: obs.width, height: currentTopHeight },
             { x: obs.x, y: obs.currentBottomImageY, width: obs.width, height: currentBottomHeight }
@@ -223,7 +233,6 @@ function update() {
         if (!obs.passed && obs.x + obs.width < player.x) {
              obs.passed = true; score++; scoreDisplay.textContent = `Fouls Drawn: ${score}`;
              scoreDisplay.classList.add('pop'); setTimeout(() => { scoreDisplay.classList.remove('pop'); }, 150);
-             // Optional speed increase independent of main difficulty lerp
              if (score > 0 && score % 8 === 0) { gameSpeed += 0.05; console.log("Speed increased to:", gameSpeed.toFixed(2)); }
         }
 
@@ -245,9 +254,8 @@ function update() {
             x: canvas.width, width: OBSTACLE_WIDTH,
             baseTopY: topImageY, topImageHeight: topImageActualHeight,
             baseBottomY: bottomImageY, bottomImageHeight: bottomImageActualHeight,
-            // Initialize current positions right away
             currentTopImageY: topImageY, currentBottomImageY: bottomImageY,
-            passed: false, hitboxRects: [{}, {}] // Hitboxes calculated in update
+            passed: false, hitboxRects: [{}, {}]
         });
     }
     frameCount++;
@@ -265,7 +273,6 @@ function drawBackground() {
         ctx.drawImage(backgroundImg, clampedSourceX, 0, sourceDrawWidth, backgroundImg.naturalHeight, 0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     } else {
-        // Fallback gradient if image fails
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
         gradient.addColorStop(0, "#282c34"); gradient.addColorStop(1, "#1f232a");
         ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -296,13 +303,8 @@ function drawObstacles() {
         // Draw Hitboxes if toggled ON
         if (showHitboxes && obstacle.hitboxRects && obstacle.hitboxRects.length === 2) {
              ctx.fillStyle = 'rgba(255, 0, 0, 0.4)'; // Semi-transparent red
-             // Check if hitbox data exists before drawing
-             if (obstacle.hitboxRects[0] && obstacle.hitboxRects[0].width) {
-                 ctx.fillRect(obstacle.hitboxRects[0].x, obstacle.hitboxRects[0].y, obstacle.hitboxRects[0].width, obstacle.hitboxRects[0].height);
-             }
-             if (obstacle.hitboxRects[1] && obstacle.hitboxRects[1].width) {
-                 ctx.fillRect(obstacle.hitboxRects[1].x, obstacle.hitboxRects[1].y, obstacle.hitboxRects[1].width, obstacle.hitboxRects[1].height);
-             }
+             if (obstacle.hitboxRects[0] && obstacle.hitboxRects[0].width) { ctx.fillRect(obstacle.hitboxRects[0].x, obstacle.hitboxRects[0].y, obstacle.hitboxRects[0].width, obstacle.hitboxRects[0].height); }
+             if (obstacle.hitboxRects[1] && obstacle.hitboxRects[1].width) { ctx.fillRect(obstacle.hitboxRects[1].x, obstacle.hitboxRects[1].y, obstacle.hitboxRects[1].width, obstacle.hitboxRects[1].height); }
         }
     });
 }
@@ -332,45 +334,114 @@ restartButton.addEventListener('click', handleRestart); restartButton.addEventLi
 function handleHitboxToggleChange(event) {
     showHitboxes = event.target.checked; // Update state based on checkbox
     console.log("Show Hitboxes:", showHitboxes);
-    // No need to update text content; CSS handles the visual state of the switch
 }
 hitboxToggleCheckbox.addEventListener('change', handleHitboxToggleChange);
 
+
 // --- Share Functionality ---
-function updateShareData(currentScore) {
-    const text = BASE_SHARE_TEXT.replace('{score}', currentScore); const encodedText = encodeURIComponent(text); const encodedUrl = encodeURIComponent(GAME_URL);
+
+// Helper function to prepare share data (text and URLs)
+function prepareShareData(currentScore) {
+    const text = BASE_SHARE_TEXT.replace('{score}', currentScore);
+    const encodedText = encodeURIComponent(text);
+    const encodedUrl = encodeURIComponent(GAME_URL);
+
+    // Update fallback links (href) - always do this in case share API fails later
     shareTwitterBtn.href = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}&hashtags=${TWITTER_HASHTAGS}`;
     shareFacebookBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"e=${encodedText}`;
+
+    // Store data needed for Web Share API if needed later
+    // Ensure shareNativeBtn exists before trying to access dataset
+    if(shareNativeBtn) {
+        shareNativeBtn.dataset.shareTitle = SHARE_TITLE;
+        shareNativeBtn.dataset.shareText = text; // Use unencoded text for Web Share API
+        shareNativeBtn.dataset.shareUrl = GAME_URL; // Use unencoded URL for Web Share API
+    }
 }
+
+// --- Native Share Button Listener ---
+async function handleNativeShare(event) {
+    event.preventDefault();
+    // Ensure dataset exists before trying to access its properties
+    const shareData = {
+        title: event.target.dataset.shareTitle || document.title,
+        text: event.target.dataset.shareText || '',
+        url: event.target.dataset.shareUrl || window.location.href,
+    };
+
+    if (!shareData.text || !shareData.url) {
+        console.error('Share data missing from dataset.');
+        prepareShareData(score); // Try to prepare it again immediately
+        shareData.text = shareNativeBtn.dataset.shareText || '';
+        shareData.url = shareNativeBtn.dataset.shareUrl || window.location.href;
+        if (!shareData.text || !shareData.url) {
+            copyFeedbackEl.textContent = 'Share Error!';
+            copyFeedbackEl.classList.add('visible');
+            setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 2000);
+            return;
+        }
+    }
+
+    console.log("Attempting Web Share with:", shareData);
+    try {
+        await navigator.share(shareData);
+        console.log('Shared successfully');
+    } catch (err) {
+        console.error('Error sharing:', err);
+        // Display error feedback using the existing element
+        copyFeedbackEl.textContent = 'Share failed!';
+        copyFeedbackEl.classList.add('visible');
+        setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 2000);
+    }
+}
+// Add listener only if the Web Share API is supported and the button exists
+if (navigator.share && shareNativeBtn) {
+    shareNativeBtn.addEventListener('click', handleNativeShare);
+    shareNativeBtn.addEventListener('touchstart', handleNativeShare);
+}
+
+
+// --- Fallback Share Button Listeners ---
+// These listeners simply ensure the href is up-to-date when clicked
+// (though prepareShareData in endGame should already have done it)
+shareTwitterBtn.addEventListener('click', (e) => { prepareShareData(score); });
+shareFacebookBtn.addEventListener('click', (e) => { prepareShareData(score); });
+
+
+// --- Copy Link Listener ---
 function copyShareLink(event) {
     event.preventDefault(); event.stopPropagation();
-    const textToCopy = BASE_SHARE_TEXT.replace('{score}', score) + ` Play here: ${GAME_URL}`;
+    // Prepare data just in case score changed since endGame
+    prepareShareData(score);
+    // Construct the text to copy specifically for the copy action
+    const textToCopy = (shareNativeBtn?.dataset?.shareText || BASE_SHARE_TEXT.replace('{score}', score)) + ` Play here: ${GAME_URL}`;
+
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(textToCopy).then(() => { copyFeedbackEl.textContent = 'Copied!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); }).catch(err => { console.error('Clipboard API copy failed: ', err); copyFeedbackEl.textContent = 'Error!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); });
     } else {
+        // Fallback copy method
         try {
             const textArea = document.createElement("textarea"); textArea.value = textToCopy; textArea.style.position = "fixed"; textArea.style.left = "-9999px"; textArea.style.top = "0"; document.body.appendChild(textArea); textArea.focus(); textArea.select(); document.execCommand('copy'); document.body.removeChild(textArea);
             copyFeedbackEl.textContent = 'Copied! (fallback)'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500);
         } catch (err) { console.error('Fallback copy method failed: ', err); copyFeedbackEl.textContent = 'Error!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); }
     }
 }
-shareTwitterBtn.addEventListener('click', (e) => { updateShareData(score); }); shareFacebookBtn.addEventListener('click', (e) => { updateShareData(score); });
-copyLinkBtn.addEventListener('click', copyShareLink); copyLinkBtn.addEventListener('touchstart', copyShareLink);
+copyLinkBtn.addEventListener('click', copyShareLink);
+copyLinkBtn.addEventListener('touchstart', copyShareLink);
+
 
 // --- Initial Setup ---
 function attemptInit() {
-    // Only initialize if all assets are processed AND the game hasn't already been initialized/started
     if (assetsLoaded >= totalAssets && (typeof gameState === 'undefined' || gameState === 'loading')) {
         console.log("Assets ready, setting game state to 'initializing'");
         gameState = 'initializing';
-        initGame(); // Initialize game variables and UI
+        initGame();
     } else if (typeof gameState === 'undefined') {
-        // If assets aren't ready yet, mark state as loading
         console.log("Assets not ready yet, setting state to 'loading'");
         gameState = 'loading';
     }
 }
-// Fallback timeout: Attempt to initialize after 3 seconds
+// Fallback timeout
 setTimeout(() => {
     if (typeof gameState === 'undefined' || gameState === 'loading') {
         console.warn("Asset load timeout (3s). Forcing initialization attempt.");
