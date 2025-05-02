@@ -86,7 +86,7 @@ const BOTTOM_HAND_OFFSET_Y_HARD = 15; const BOTTOM_HAND_HEIGHT_HARD = 65; const 
 const MIN_GAP_Y = 60;
 const MAX_GAP_Y = canvas.height - GAP_HEIGHT - 60;
 const OBSTACLE_SPAWN_RATE = 150;
-const DRAW_HITBOXES = true;
+const DRAW_HITBOXES = false;
 
 // Linear interpolation function
 function lerp(start, end, t) {
