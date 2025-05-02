@@ -4,7 +4,7 @@ Welcome to Flappy Flopper, where the art of drawing contact meets the simple (ye
 
 This project is a fun side-project and a humorous tribute to both Vezenkov's unique playing style and the iconic Flappy Bird game.
 
-**➡️ [Play Flappy Flopper Live!]([https://greekstreams.github.io/flappyflopper/])** ⬅️ 
+**➡️ [Play Flappy Flopper Live!](https://greekstreams.github.io/flappyflopper/) ⬅️**
 
 ---
 
