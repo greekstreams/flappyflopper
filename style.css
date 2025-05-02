@@ -27,6 +27,11 @@ hr {
     margin: 15px 0;
 }
 
+/* Helper Class */
+.hidden {
+    display: none !important; /* Use !important to ensure it overrides other display properties */
+}
+
 /* Structure */
 .page-wrapper {
     display: flex;
@@ -147,7 +152,6 @@ hr {
     height: 480px;
     overflow: hidden;
     background-color: #3a3f47; /* Fallback background */
-    /* Background image is handled by canvas drawing */
 }
 
 canvas { display: block; }
@@ -208,15 +212,36 @@ canvas { display: block; }
 /* Share Button Styles */
 .share-section { margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.3); padding-top: 15px; width: 90%; }
 .share-section p { font-size: 0.9em; margin-bottom: 10px; font-weight: bold; }
-.share-button { display: inline-block; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; color: white; text-align: center; font-size: 1.2em; margin: 5px 5px; text-decoration: none; transition: transform 0.2s ease, background-color 0.2s ease; border: none; cursor: pointer; vertical-align: middle; }
+.share-button { display: inline-block; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; color: white; text-align: center; font-size: 1.2em; margin: 5px 5px; text-decoration: none; transition: transform 0.2s ease, background-color 0.2s ease; border: none; cursor: pointer; vertical-align: middle; padding: 0; /* Reset padding for icon buttons */ }
 .share-button:hover { transform: scale(1.1); }
-.share-button.twitter { background-color: #1DA1F2; } .share-button.facebook { background-color: #1877F2; } .share-button.copy { background-color: #777777; }
+.share-button.twitter { background-color: #1DA1F2; }
+.share-button.facebook { background-color: #1877F2; }
+.share-button.copy { background-color: #777777; }
+
+/* Native Share Button Styling */
+.share-button.native-share {
+    background-color: #6c757d; /* A neutral grey */
+    width: auto; /* Adjust width based on content */
+    height: auto; /* Adjust height based on content */
+    line-height: normal; /* Reset line height */
+    padding: 8px 15px; /* Horizontal & Vertical padding */
+    border-radius: 20px; /* Pill shape */
+    font-size: 1em; /* Adjust font size */
+    vertical-align: middle;
+}
+.share-button.native-share i {
+    margin-right: 5px;
+}
+.share-button.native-share:hover {
+    background-color: #5a6268;
+    transform: scale(1.05); /* Slightly different hover */
+}
+
 .share-button.copy:focus { outline: none; }
 .copy-feedback { display: inline-block; margin-left: 10px; font-size: 0.8em; color: #aaffaa; opacity: 0; transition: opacity 0.3s ease-in-out; }
 .copy-feedback.visible { opacity: 1; }
 
 /* Screen Shake */
-/* Apply shake to the body or page-wrapper if game-container moves with it */
 .page-wrapper.shake #game-container {
     animation: shake 0.15s linear;
 }
@@ -227,169 +252,58 @@ canvas { display: block; }
 .toggle-switch-container {
     display: flex;
     align-items: center;
-    justify-content: center; /* Center label and switch */
+    justify-content: center;
     margin-top: 15px; /* Space below game container */
-    width: 100%; /* Take width for centering */
-    max-width: 320px; /* Align with game width */
+    width: 100%;
+    max-width: 320px;
+    padding-bottom: 10px; /* Add some space at the bottom */
 }
 
 .toggle-label {
-    margin-right: 10px; /* Space between text and switch */
+    margin-right: 10px;
     font-size: 0.9em;
-    color: #ccc; /* Lighter grey text */
+    color: #ccc;
 }
 
-/* The switch - the box around the slider */
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;  /* Width of the switch track */
-  height: 24px; /* Height of the switch track */
-  flex-shrink: 0; /* Prevent switch from shrinking */
+  position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;
 }
-
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* The slider track */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #5a6270; /* Default OFF background (dark grey) */
-  -webkit-transition: .3s;
-  transition: .3s;
-}
-
-/* The slider knob */
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px; /* Height of the knob */
-  width: 18px;  /* Width of the knob */
-  left: 3px;    /* Initial left position (padding) */
-  bottom: 3px;  /* Initial bottom position (padding) */
-  background-color: white;
-  -webkit-transition: .3s;
-  transition: .3s;
-}
-
-input:checked + .slider {
-  background-color: #0056b3; /* Dark blue for ON state */
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #0056b3; /* Optional focus style */
-}
-
-/* Move the knob when checked */
-input:checked + .slider:before {
-  -webkit-transform: translateX(20px); /* Move distance: track width - knob width - (2*padding) */
-  -ms-transform: translateX(20px);
-  transform: translateX(20px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 24px; /* Half the height for pill shape */
-}
-
-.slider.round:before {
-  border-radius: 50%; /* Circular knob */
-}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #5a6270; transition: .3s; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; }
+input:checked + .slider { background-color: #0056b3; }
+input:focus + .slider { box-shadow: 0 0 1px #0056b3; }
+input:checked + .slider:before { transform: translateX(20px); }
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
 
 
 /* --- Responsiveness --- */
 @media (max-width: 768px) {
-    .container {
-        width: 95%;
-    }
-
-    .main-content {
-        flex-direction: column; /* Stack columns */
-        align-items: center; /* Center items */
-        padding: 20px 0;
-        gap: 30px;
-    }
-
-    .game-column {
-        order: 1; /* Show game first */
-        width: 100%; /* Take full width */
-        flex-basis: auto; /* Reset flex-basis */
-        align-items: center; /* Ensure content is centered */
-    }
-
-    .info-column {
-        order: 2; /* Show info second */
-        flex-basis: auto; /* Reset flex-basis */
-        width: 95%; /* Take most of the width */
-        max-width: 400px; /* Limit max width even on mobile */
-    }
-
-     .main-header .container {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .main-nav {
-        margin-top: 5px;
-    }
-     .main-nav a {
-        margin: 0 5px;
-     }
-
-    .main-footer {
-        font-size: 0.8em;
-    }
-
-    .toggle-switch-container {
-        margin-top: 10px; /* Reduce space on mobile */
-        justify-content: flex-start; /* Align to left on mobile? Or keep center? */
-        padding-left: 10px; /* Add some padding if aligned left */
-        padding-right: 10px;
-    }
-     .toggle-label {
-         font-size: 0.85em; /* Slightly smaller text on mobile */
-     }
+    .container { width: 95%; }
+    .main-content { flex-direction: column; align-items: center; padding: 20px 0; gap: 30px; }
+    .game-column { order: 1; width: 100%; flex-basis: auto; align-items: center; }
+    .info-column { order: 2; flex-basis: auto; width: 95%; max-width: 400px; }
+    .main-header .container { flex-direction: column; gap: 10px; }
+    .main-nav { margin-top: 5px; }
+    .main-nav a { margin: 0 5px; }
+    .main-footer { font-size: 0.8em; }
+    .toggle-switch-container { margin-top: 10px; justify-content: center; padding-left: 10px; padding-right: 10px; }
+    .toggle-label { font-size: 0.85em; }
 }
 
 
-/* --- About Page Specific Styles --- (Keep these separate if possible) */
-
-.main-content .about-content-box {
-    background-color: #1f232a;
-    padding: 30px 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    width: 100%;
-    max-width: 800px;
-    margin: 20px auto;
-    flex-grow: 0;
-    flex-shrink: 1;
-}
-
-.about-content-box h1 {
-    color: #ffffff; margin-bottom: 20px; font-size: 2em; border-bottom: 1px solid #444b58; padding-bottom: 15px; text-align: center;
-}
-.about-content-box h2 {
-    color: #ffffff; margin-top: 25px; margin-bottom: 15px; font-size: 1.6em; border-bottom: 1px solid #444b58; padding-bottom: 10px;
-}
+/* --- About Page Specific Styles --- */
+.main-content .about-content-box { background-color: #1f232a; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); width: 100%; max-width: 800px; margin: 20px auto; flex-grow: 0; flex-shrink: 1; }
+.about-content-box h1 { color: #ffffff; margin-bottom: 20px; font-size: 2em; border-bottom: 1px solid #444b58; padding-bottom: 15px; text-align: center; }
+.about-content-box h2 { color: #ffffff; margin-top: 25px; margin-bottom: 15px; font-size: 1.6em; border-bottom: 1px solid #444b58; padding-bottom: 10px; }
 .about-content-box p { line-height: 1.7; margin-bottom: 15px; font-size: 1em; }
-
 .about-twitter-link { display: inline-block; background-color: #1DA1F2; color: white; padding: 8px 15px; border-radius: 5px; font-weight: 700; transition: background-color 0.2s ease, transform 0.1s ease; }
 .about-twitter-link i { margin-right: 8px; }
 .about-twitter-link:hover { background-color: #1a91da; text-decoration: none; transform: scale(1.03); }
-
 .back-to-game-button { display: inline-block; padding: 12px 25px; font-size: 1.1em; font-weight: 700; font-family: 'Poppins', sans-serif; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: background-color 0.2s ease, transform 0.1s ease; text-decoration: none; }
 .back-to-game-button:hover { background-color: #45a049; text-decoration: none; transform: scale(1.03); }
 .back-to-game-button:active { transform: scale(0.98); }
-
 @media (max-width: 768px) {
     .main-content .about-content-box { padding: 20px 25px; margin: 10px auto; }
     .about-content-box h1 { font-size: 1.8em; }
