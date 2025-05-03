@@ -129,7 +129,28 @@ function endGame() {
             "A flop worthy of the highlight reel.", // New
             "The simulation detected excessive simulation.", // New
             "Even the commentators are laughing.", // New
-            "Pulled a hamstring... from the acting." // New
+            "Pulled a hamstring... from the acting.", // New
+            // --- New Sarcastic Sportscaster Additions ---
+            "Was there a sniper in the rafters?",
+            "The breeze from the A/C strikes again!",
+            "He went down like he was hit by... air?",
+            "That's commitment to the bit!",
+            "The delay on that reaction was... *chef's kiss*.",
+            "Looks like a career-ender... oh, he's up. Never mind.",
+            "Newton's laws are merely suggestions, apparently.",
+            "The physics engine needs a reboot after that one.",
+            "Even his shadow looked confused.",
+            "He'll feel that one... in the film session tomorrow.",
+            "Trying to draw the foul from the parking lot.",
+            "Impressive hangtime... on the way down.",
+            "He absorbed that contact like it was made of pillows.",
+            "Someone check his shoes for banana peels.",
+            "That's going straight to the 'Not Top 10'.",
+            "He's appealing to the ref... and maybe the judges.",
+            "Lost the battle with gravity... decisively.",
+            "Did an invisible defender just trip him?",
+            "A masterclass in simulation. 2/10 execution.",
+            "The floor appears to be undefeated tonight."
         ];
         // --- End UPDATED Messages ---
 
