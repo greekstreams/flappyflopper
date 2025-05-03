@@ -66,6 +66,7 @@
                     <!-- Start Screen -->
                     <div id="start-screen" class="overlay visible">
                         <h1>Flappy Flopper</h1>
+                        <p id="high-score-display-start">Your Best: 0</p>
                         <p>Click or Tap to Flop!</p>
                         <p>(Avoid the hands)</p>
                     </div>
@@ -73,30 +74,43 @@
                     <div id="game-over-screen" class="overlay">
                         <h2 id="game-over-message">Game Over!</h2>
                         <p>Fouls Drawn: <span id="final-score">0</span></p>
+                        <p id="high-score-display-end">Your Best: 0</p>
                         <button id="restart-button" class="game-button">Restart</button>
                         <div class="share-section">
                             <p>Share Score:</p>
-                            <!-- Generic Share Button (shown if Web Share API available) -->
                             <button id="share-native" class="share-button native-share hidden">
                                 <i class="fas fa-share-alt"></i> Share
                             </button>
-                            <!-- Fallback Buttons (shown if Web Share API NOT available) -->
                             <a href="#" id="share-twitter" class="share-button twitter fallback-share hidden" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
                             <a href="#" id="share-facebook" class="share-button facebook fallback-share hidden" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-                            <!-- Copy Link Button (Always shown) -->
                             <button id="copy-link" class="share-button copy"><i class="fas fa-link"></i></button>
                             <span id="copy-feedback" class="copy-feedback"></span>
                         </div>
                     </div>
                     <!-- Score Display (inside game-container) -->
                     <div id="score-display">Fouls Drawn: 0</div>
+                    <!-- Notification Area (Modified) -->
+                    <div id="achievement-notification" class="achievement-toast hidden">
+                        <!-- Removed H3 -->
+                        <p id="achievement-name"></p> <!-- Displays the random message -->
+                        <p id="achievement-desc"></p> <!-- Can display secondary message or be empty -->
+                    </div>
                 </div><!-- End #game-container -->
 
-                <!-- Toggle Switch -->
+                <!-- Toggle Switch Container (Existing for Hitbox) -->
                 <div class="toggle-switch-container">
                     <label for="hitboxToggle" class="toggle-label">Show Hitboxes (Easier):</label>
                     <label class="switch">
                         <input type="checkbox" id="hitboxToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <!-- Toggle Switch Container for Mute -->
+                <div class="toggle-switch-container">
+                    <label for="muteToggle" class="toggle-label">Mute Sound:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="muteToggle">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -108,6 +122,7 @@
                 <h2>The Art of the Flop</h2>
                 <p>Navigate Sasha Vezenkov through the treacherous reaching hands. Click or Tap (or use Spacebar) to execute a tactical flop and gain altitude. Draw as many fouls as you can!</p>
                 <p>This highly sophisticated simulation is based on countless hours of game tape analysis.</p>
+                <!-- Removed static achievement list -->
                 <hr>
                 <p>Game concept by DimiInsights. Based on the Flappy Bird phenomenon.</p>
                 <p>Follow future developments: <a href="https://x.com/DimiInsights" target="_blank">@DimiInsights</a></p>
