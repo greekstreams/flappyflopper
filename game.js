@@ -37,8 +37,8 @@ playerImg.onerror = () => assetLoaded('player', false); obstacleTopImg.onerror =
 
 // --- Share Configuration ---
 const GAME_URL = window.location.href;
-const BASE_SHARE_TEXT = "I drew {score} fouls in Flappy Flopper! Can you beat my score?";
-const TWITTER_HASHTAGS = "FlappyFlopper,Vezenkov,paobc,olympiacosbc";
+const BASE_SHARE_TEXT = "Drew {score} fouls with Vezenkov in Flappy Flopper! 🏀 Getting hyped for the #EuroLeague #F4GLORY. Can you flop better? 😉";
+const TWITTER_HASHTAGS = "FlappyFlopper,paobc,olympiacosbc";
 const SHARE_TITLE = "Flappy Flopper Score!";
 
 // Game variables
