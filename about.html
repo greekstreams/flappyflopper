@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>About - Flappy Flopper</title> <!-- Changed title -->
+    <!-- SEO: Title is clear and includes keywords -->
+    <title>About Flappy Flopper - The Sasha Vezenkov Flopping Game</title>
+    <!-- SEO: Compelling Meta Description -->
+    <meta name="description" content="Learn about Flappy Flopper, the hilarious web game inspired by Sasha Vezenkov's legendary flopping skills! Discover the story behind this Flappy Bird parody created by DimiInsights.">
+
     <link rel="stylesheet" href="style.css">
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons (optional here, but kept for consistency) -->
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4GRDCX3FK1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
       gtag('config', 'G-4GRDCX3FK1');
     </script>
+
+    <!-- Twitter Widgets JS (needed for the embed) -->
+    <!-- Best practice is often near the end of <body>, but placing it here ensures it's loaded before the embed might render -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 </head>
 <body>
@@ -30,49 +37,61 @@
         <!-- Re-use the exact same header -->
         <header class="main-header">
             <div class="container">
-                <h1 class="logo"><a href="index.html" style="color: #ffffff; text-decoration: none;">Flappy Flopper</a></h1> <!-- Link logo back home -->
+                <h1 class="logo"><a href="index.html" style="color: #ffffff; text-decoration: none;">Flappy Flopper</a></h1>
                 <nav class="main-nav">
-                    <a href="index.html">Game</a> <!-- Link to game page -->
-                    <a href="about.html" style="background-color: #444b58;">About</a> <!-- Highlight 'About' link potentially -->
+                    <a href="index.html">Game</a>
+                    <a href="about.html" style="background-color: #444b58;">About</a>
                 </nav>
             </div>
         </header>
 
         <!-- Main content area for the About page -->
         <main class="main-content container">
-            <!-- Use a dedicated div for the about content, styled similarly to info-column -->
+            <!-- Use a dedicated div for the about content -->
             <div class="about-content-box">
+                <!-- SEO: H1 is the main topic -->
                 <h1>About Flappy Flopper</h1>
-                <p>Welcome to Flappy Flopper, where the art of drawing contact meets the simple (yet infuriating) mechanics of classic tap-to-fly games.</p>
-                <p>Guide Sasha Vezenkov, master of the strategic stumble, through a gauntlet of reaching hands. Every tap is a tactical flop, a necessary maneuver to gain altitude and avoid the defense. How many fouls can *you* draw?</p>
+                <!-- Engaging intro, less formal -->
+                <p>Ever watched Sasha Vezenkov masterfully draw contact and thought, "That's not just a foul, that's performance art"? Well, you're in the right place! Welcome to <strong>Flappy Flopper</strong>, the ridiculously fun (and frustrating) web game celebrating the art of the strategic stumble.</p>
+                <p>Guide our hero, Sasha, through a perilous obstacle course of defenders' arms. Every tap isn't just a jump, it's a <em>tactical flop</em> designed to gain altitude and, more importantly, draw those precious fouls. Forget points, how many flops can YOU rack up before hitting the floor (or a hand)?</p>
 
                 <hr>
 
-                <h2>The Creator & Inspiration</h2>
-                <p>This game was created by DimiInsights as a fun side-project and a humorous tribute to both Vezenkov's unique playing style and the iconic Flappy Bird game.</p>
-                <p>It's built with simple web technologies (HTML, CSS, and JavaScript) and countless hours of watching basketball highlights (for research, of course!).</p>
+                <!-- More engaging heading -->
+                <h2>The Origin Story (& The Legendary Flop)</h2>
+                <p>Flappy Flopper is a side-project hustle by DimiInsights, cooked up out of a love for basketball, simple web games, and, let's be honest, a certain unforgettable moment of flopping genius involving Sasha Vezenkov that caught fire online.</p>
+                <!-- Context and Tweet Embed -->
+                <p>The spark? Inspired by legendary plays and the sheer physics-defying beauty of moments like this:</p>
+                <blockquote class="twitter-tweet" data-theme="dark" data-align="center"><p lang="el" dir="ltr">Δείτε ξανά το μεγάλο τρίποντο του Βεζένκοφ !!!!11 <a href="https://twitter.com/hashtag/paobc?src=hash&ref_src=twsrc%5Etfw">#paobc</a> <a href="https://t.co/BctCzMBfSJ">pic.twitter.com/BctCzMBfSJ</a></p>— HarryCane (@HarryCane20) <a href="https://twitter.com/HarryCane20/status/1918045326881243286?ref_src=twsrc%5Etfw">May 1, 2025</a></blockquote>
+                <!-- Removed the extra script tag here since it's in the head -->
+                <p>This game is built with straightforward HTML, CSS, and JavaScript, plus countless hours spent "researching" basketball highlights. It's a humble, humorous nod to both Vezenkov's unique style and the iconic Flappy Bird that inspired a generation of tapping addicts.</p>
 
                 <hr>
 
-                <h2>Follow & Connect</h2>
-                <p>For more insights, questionable game ideas, or just basketball talk, you can follow the creator on Twitter:</p>
+                <!-- More engaging heading -->
+                <h2>Connect & Share Your Flops!</h2>
+                <p>Got thoughts on the game? Want more questionable basketball takes or random project updates? Follow the creator on Twitter:</p>
                 <p style="text-align: center; margin: 15px 0;">
                     <a href="https://twitter.com/DimiInsights" target="_blank" rel="noopener noreferrer" class="about-twitter-link">
                         <i class="fab fa-twitter"></i> @DimiInsights
                     </a>
                 </p>
-                <p>Feel free to share your high scores or feedback!</p>
+                <!-- Added a hashtag suggestion -->
+                <p>We'd love to see your high scores (or epic fails)! Feel free to share them using #FlappyFlopper.</p>
 
                 <hr>
 
-                 <h2>Acknowledgements</h2>
-                 <p>Inspired by Dong Nguyen's Flappy Bird.</p>
-                 <p>Uses Google Fonts ('Poppins') and Font Awesome icons.</p>
+                 <!-- Slightly less formal heading -->
+                 <h2>Hats Off To...</h2>
+                 <!-- More conversational acknowledgements -->
+                 <p>A big nod to Dong Nguyen's original Flappy Bird for the simple-yet-infuriating inspiration.</p>
+                 <p>Thanks to Google Fonts ('Poppins') and Font Awesome for making things look sharp.</p>
 
                 <hr>
 
+                <!-- Clear call to action -->
                 <p style="text-align: center; margin-top: 25px;">
-                    <a href="index.html" class="back-to-game-button">Play Flappy Flopper!</a>
+                    <a href="index.html" class="back-to-game-button">Ready to Flop? Play Now!</a>
                 </p>
 
             </div>
@@ -81,7 +100,8 @@
         <!-- Re-use the exact same footer -->
         <footer class="main-footer">
             <div class="container">
-                <p>&copy; 2025 Flappy Flopper. All Rights Reserved (Probably). | <a href="privacy.html">Privacy Policy</a></p>
+                <!-- Minor tweak for fun -->
+                <p>© 2025 Flappy Flopper. All Rights Reserved (Probably). | <a href="privacy.html">Privacy Policy</a></p>
             </div>
         </footer>
 
