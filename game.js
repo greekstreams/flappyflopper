@@ -40,6 +40,7 @@ const fallbackShareButtons = document.querySelectorAll('.fallback-share');
 // Toggle Checkboxes
 const hitboxToggleCheckbox = document.getElementById('hitboxToggle');
 const muteToggleCheckbox = document.getElementById('muteToggle');
+const installAppButton = document.getElementById('install-app-button');
 // Notification Toast Elements
 const notificationToast = document.getElementById('achievement-notification'); // Renamed variable
 const notificationMessage1 = document.getElementById('achievement-name');    // Will hold primary message
@@ -47,6 +48,42 @@ const notificationMessage2 = document.getElementById('achievement-desc');    // 
 // High Score Elements
 const highScoreDisplayStart = document.getElementById('high-score-display-start');
 const highScoreDisplayEnd = document.getElementById('high-score-display-end');
+let deferredPrompt = null;
+
+const standaloneDisplay = window.matchMedia('(display-mode: standalone)');
+if (installAppButton && standaloneDisplay.matches) {
+    installAppButton.classList.add('hidden');
+}
+
+window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    if (!installAppButton || standaloneDisplay.matches) return;
+
+    deferredPrompt = event;
+    installAppButton.classList.remove('hidden');
+});
+
+if (installAppButton) {
+    installAppButton.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+
+        const installEvent = deferredPrompt;
+        try {
+            await installEvent.prompt();
+            await installEvent.userChoice;
+        } catch (error) {
+            console.warn('App installation prompt failed:', error);
+        }
+
+        deferredPrompt = null;
+        installAppButton.classList.add('hidden');
+    });
+}
+
+window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    if (installAppButton) installAppButton.classList.add('hidden');
+});
 
 
 // --- Load Game Assets ---
