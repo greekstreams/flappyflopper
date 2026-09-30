@@ -107,7 +107,8 @@ const SHARE_TITLE = "Flappy Flopper Score!";
 
 // --- Local Storage Keys ---
 const HIGH_SCORE_KEY = 'flappyFlopperHighScore_v1';
-const MUTE_STATE_KEY = 'flappyFlopperMute_v1';
+const SOUND_ENABLED_KEY = 'flappyFlopperSoundEnabled_v1';
+const LEGACY_MUTE_STATE_KEY = 'flappyFlopperMute_v1';
 // Removed ACHIEVEMENTS_KEY
 
 // Game variables
@@ -167,8 +168,8 @@ function playSound(sound) {
 // --- MUTE LOGIC (Tied to Checkbox) ---
 function handleMuteToggleChange(event) {
     if (event && event.target) {
-        isMuted = event.target.checked; // Update state from checkbox
-        localStorage.setItem(MUTE_STATE_KEY, isMuted);
+        isMuted = !event.target.checked;
+        localStorage.setItem(SOUND_ENABLED_KEY, !isMuted);
         console.log("Mute Toggled via checkbox. New state:", isMuted);
         applyMuteState();
         playSound(clickSound); // Play click sound respecting new mute state
@@ -197,14 +198,16 @@ function loadGameState() {
     highScore = storedHighScore ? parseInt(storedHighScore, 10) : 0;
     if (isNaN(highScore)) highScore = 0;
     console.log("Loaded High Score:", highScore);
-    // Load Mute State (Default to Muted)
-    const storedMuteState = localStorage.getItem(MUTE_STATE_KEY);
-    if (storedMuteState === null) {
-        isMuted = true; // Default to muted on first load/reset
-        console.log("Mute State: No setting found, defaulting to Muted (true).");
+    // Load sound-enabled state, migrating the previous mute preference if present.
+    const storedSoundEnabled = localStorage.getItem(SOUND_ENABLED_KEY);
+    if (storedSoundEnabled !== null) {
+        isMuted = storedSoundEnabled !== 'true';
+        console.log("Loaded Sound Enabled State:", storedSoundEnabled);
     } else {
-        isMuted = storedMuteState === 'true'; // Load saved setting
-        console.log("Loaded Mute State from localStorage:", storedMuteState, " Parsed as:", isMuted);
+        const storedMuteState = localStorage.getItem(LEGACY_MUTE_STATE_KEY);
+        isMuted = storedMuteState === null || storedMuteState === 'true';
+        localStorage.setItem(SOUND_ENABLED_KEY, !isMuted);
+        console.log("Migrated legacy mute setting. Sound enabled:", !isMuted);
     }
     // Removed Achievement Loading
 }
@@ -260,7 +263,7 @@ function initGame() {
     // Set initial state of toggle checkboxes
     if (hitboxToggleCheckbox) { hitboxToggleCheckbox.checked = showHitboxes; }
     else { console.error("Hitbox toggle checkbox not found!"); }
-    if (muteToggleCheckbox) { muteToggleCheckbox.checked = isMuted; console.log("Setting mute checkbox initial state to:", isMuted); }
+    if (muteToggleCheckbox) { muteToggleCheckbox.checked = !isMuted; console.log("Setting sound checkbox initial state to:", !isMuted); }
     else { console.error("Mute toggle checkbox not found!"); }
 
     // Share Button Visibility Setup
