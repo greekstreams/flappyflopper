@@ -124,6 +124,33 @@ hr {
     justify-content: flex-start;
 }
 
+.game-controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 18px;
+    width: min(320px, 95vw);
+    margin-top: 10px;
+}
+
+.game-controls-row .toggle-switch-container {
+    width: auto;
+    max-width: none;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+
+.game-controls-row .toggle-label {
+    width: auto;
+    margin-right: 0;
+    color: #aeb7c3;
+    font-size: 0.8em;
+    text-align: left;
+}
+
 /* Info Column */
 .info-column {
     flex: 0 1 350px;
@@ -168,29 +195,6 @@ hr {
     color: #aaa;
     border-top: 1px solid #444b58;
 }
-
-.game-settings-footer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 8px 24px;
-    width: min(95%, 700px);
-    margin: 0 auto 8px;
-}
-
-.game-settings-footer .toggle-switch-container {
-    width: auto;
-    max-width: none;
-    margin: 0;
-    padding: 0;
-}
-
-.game-settings-footer .toggle-label {
-    width: auto;
-    text-align: left;
-}
-
 
 /* --- Game Specific Styles --- */
 
