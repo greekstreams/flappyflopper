@@ -353,7 +353,7 @@ function gameLoop(timestamp = performance.now()) {
 
 // --- Event Listeners ---
 function handleInput(event) { event.preventDefault(); if (gameState === 'start') { if (!isMuted && backgroundMusic.paused) { backgroundMusic.play().catch(e => { if (e.name !== 'NotAllowedError') console.log("Initial music play failed on input:", e); }); } startGame(); } else if (gameState === 'playing') { playerFlop(); } }
-if (gameContainer) { gameContainer.addEventListener('mousedown', handleInput); gameContainer.addEventListener('touchstart', handleInput); } else { console.error("Game container element not found!"); }
+if (gameContainer) { gameContainer.addEventListener('pointerdown', handleInput); } else { console.error("Game container element not found!"); }
 document.addEventListener('keydown', function(e) { if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); handleInput(e); } });
 
 function handleRestart(event) { event.preventDefault(); event.stopPropagation(); console.log("Restart button activated"); playSound(clickSound); initGame(); }
