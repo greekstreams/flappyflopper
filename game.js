@@ -263,6 +263,7 @@ function endGame() {
         gameState = 'gameOver';
         backgroundMusic.pause(); backgroundMusic.currentTime = 0;
         playSound(crashSound);
+        if (typeof navigator.vibrate === 'function') navigator.vibrate([30, 50, 30]);
         gameOverScreen.classList.add('visible');
         finalScoreDisplay.textContent = score;
         // Check/Update High Score
@@ -271,7 +272,8 @@ function endGame() {
         const messages = [ "Technical Foul!", "Yellow Card for Diving!", "And the Oscar goes to...", "He felt that one!", "Called for Traveling (sideways)!", "Flopped too hard!", "Ref didn't buy it!", "Barely clipped a fingernail!", "Looked like a gust of wind took him out!", "Needs more drama classes.", "Gravity seems selective today.", "Did he practice that fall?", "Someone check the replay... oh wait.", "Clutching the wrong body part!", "He's selling it like prime real estate!", "Where's the stretcher?! ...Never mind.", "A flop worthy of the highlight reel.", "The simulation detected excessive simulation.", "Even the commentators are laughing.", "Pulled a hamstring... from the acting.", "Was there a sniper in the rafters?", "The breeze from the A/C strikes again!", "He went down like he was hit by... air?", "That's commitment to the bit!", "The delay on that reaction was... *chef's kiss*.", "Looks like a career-ender... oh, he's up. Never mind.", "Newton's laws are merely suggestions, apparently.", "The physics engine needs a reboot after that one.", "Even his shadow looked confused.", "He'll feel that one... in the film session tomorrow.", "Trying to draw the foul from the parking lot.", "Impressive hangtime... on the way down.", "He absorbed that contact like it was made of pillows.", "Someone check his shoes for banana peels.", "That's going straight to the 'Not Top 10'.", "He's appealing to the ref... and maybe the judges.", "Lost the battle with gravity... decisively.", "Did an invisible defender just trip him?", "A masterclass in simulation. 2/10 execution.", "The floor appears to be undefeated tonight." ];
         gameOverMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
         // Screen shake
-        pageWrapper.classList.add('shake'); setTimeout(() => { pageWrapper.classList.remove('shake'); }, 150);
+        gameContainer.style.animationDuration = '100ms';
+        pageWrapper.classList.add('shake'); setTimeout(() => { pageWrapper.classList.remove('shake'); gameContainer.style.animationDuration = ''; }, 100);
         // Removed crash achievement check
         prepareShareData(score);
     }
@@ -282,6 +284,7 @@ function playerFlop() { // Simplified - removed achievement check
         player.velocityY = lift;
         player.scale = 1.15;
         playSound(flapSound);
+        if (typeof navigator.vibrate === 'function') navigator.vibrate(10);
     }
 }
 
