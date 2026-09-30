@@ -24,6 +24,9 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const finalScoreDisplay = document.getElementById('final-score');
 const gameOverMessage = document.getElementById('game-over-message');
 const restartButton = document.getElementById('restart-button');
+// [ADSENSE] Rewarded continuation control.
+const rewardContinueButton = document.getElementById('reward-continue-button');
+// [/ADSENSE]
 const gameContainer = document.getElementById('game-container');
 const pageWrapper = document.querySelector('.page-wrapper');
 // Share Elements
@@ -91,6 +94,10 @@ let highScore = 0;
 let isMuted = false; // State variable
 // Removed unlockedAchievements
 let notificationTimeout = null; // Renamed from achievementTimeout
+// [ADSENSE] Ad placement state persists across restarts within this page session.
+let gameOverCount = 0;
+let rewardedContinueUsed = false;
+// [/ADSENSE]
 
 // Player settings
 const PLAYER_WIDTH = 50; const PLAYER_HEIGHT = 60;
@@ -209,6 +216,13 @@ function initGame() {
     // Reset game variables
     player = { x: 50, y: GAME_HEIGHT / 2 - PLAYER_HEIGHT / 2, width: PLAYER_WIDTH, height: PLAYER_HEIGHT, velocityY: 0, scale: 1 }; // Removed firstFlopDone
     obstacles = []; score = 0; gravity = 0.25; lift = -6; gameSpeed = 1.8; gameState = 'start'; frameCount = 0; sourceBackgroundX = 0; backgroundDirection = 1;
+    // [ADSENSE] A new run restores rewarded continuation availability.
+    rewardedContinueUsed = false;
+    if (rewardContinueButton) {
+        rewardContinueButton.classList.add('hidden');
+        rewardContinueButton.disabled = false;
+    }
+    // [/ADSENSE]
 
     // Reset UI Elements
     scoreDisplay.textContent = `Fouls Drawn: 0`; scoreDisplay.classList.remove('pop'); gameOverScreen.classList.remove('visible'); startScreen.classList.add('visible'); scoreDisplay.style.display = 'none'; copyFeedbackEl.classList.remove('visible'); pageWrapper.classList.remove('shake');
@@ -244,6 +258,13 @@ function startGame() {
     if (gameState === 'start') {
         console.log("Starting game...");
         gameState = 'playing';
+        // [ADSENSE] Preload the next ad placement without blocking gameplay.
+        try {
+            if (typeof adConfig === 'function') adConfig({ preload: 'auto' });
+        } catch (error) {
+            console.warn('AdSense preload failed:', error);
+        }
+        // [/ADSENSE]
         window.dispatchEvent(new Event('flappyflopper:start'));
         startScreen.classList.remove('visible');
         scoreDisplay.style.display = 'block';
@@ -278,8 +299,61 @@ function endGame() {
         pageWrapper.classList.add('shake'); setTimeout(() => { pageWrapper.classList.remove('shake'); gameContainer.style.animationDuration = ''; }, 100);
         // Removed crash achievement check
         prepareShareData(score);
+        // [ADSENSE] Interstitial cadence and rewarded continuation availability.
+        gameOverCount++;
+        if (rewardContinueButton) {
+            rewardContinueButton.classList.toggle('hidden', rewardedContinueUsed);
+        }
+        if (gameOverCount % 3 === 0) {
+            try {
+                if (typeof adBreak === 'function') {
+                    adBreak({ type: 'next', name: 'gameover', beforeAd: () => {}, afterAd: () => {} });
+                }
+            } catch (error) {
+                console.warn('AdSense game-over ad failed:', error);
+            }
+        }
+        // [/ADSENSE]
     }
 }
+
+// [ADSENSE] Request a rewarded placement and resume only after a viewed reward.
+function handleRewardedContinue() {
+    if (gameState !== 'gameOver' || rewardedContinueUsed) return;
+
+    rewardedContinueUsed = true;
+    if (rewardContinueButton) {
+        rewardContinueButton.classList.add('hidden');
+        rewardContinueButton.disabled = true;
+    }
+    const lastScore = score;
+
+    try {
+        if (typeof adBreak !== 'function') throw new Error('AdSense rewarded ads are unavailable.');
+        adBreak({
+            type: 'reward',
+            name: 'continue',
+            beforeAd: () => {},
+            afterAd: () => {},
+            adBreakDone: (placementInfo) => {
+                if (!placementInfo || placementInfo.breakStatus !== 'viewed') return;
+                try {
+                    initGame();
+                    score = lastScore;
+                    gameSpeed = 1.8 + Math.floor(lastScore / 8) * 0.05;
+                    scoreDisplay.textContent = `Fouls Drawn: ${score}`;
+                    rewardedContinueUsed = true;
+                    startGame();
+                } catch (error) {
+                    console.warn('Could not resume after rewarded ad:', error);
+                }
+            }
+        });
+    } catch (error) {
+        console.warn('AdSense rewarded ad failed:', error);
+    }
+}
+// [/ADSENSE]
 
 function playerFlop() { // Simplified - removed achievement check
     if (gameState === 'playing') {
@@ -380,6 +454,9 @@ document.addEventListener('keydown', function(e) { if (e.code === 'Space' || e.c
 
 function handleRestart(event) { event.preventDefault(); event.stopPropagation(); console.log("Restart button activated"); playSound(clickSound); initGame(); }
 if (restartButton) { restartButton.addEventListener('click', handleRestart); restartButton.addEventListener('touchstart', handleRestart); } else { console.error("Restart button not found!"); }
+// [ADSENSE] Rewarded continuation listener.
+if (rewardContinueButton) { rewardContinueButton.addEventListener('click', handleRewardedContinue); }
+// [/ADSENSE]
 
 // Hitbox Toggle Listener (Removed achievement check)
 function handleHitboxToggleChange(event) { if (event && event.target) { showHitboxes = event.target.checked; console.log("Show Hitboxes Toggled:", showHitboxes); playSound(clickSound); } }
