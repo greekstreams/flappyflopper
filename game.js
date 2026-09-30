@@ -27,6 +27,7 @@ const restartButton = document.getElementById('restart-button');
 const gameContainer = document.getElementById('game-container');
 const pageWrapper = document.querySelector('.page-wrapper');
 // Share Elements
+const shareBtn = document.getElementById('share-btn');
 const shareNativeBtn = document.getElementById('share-native');
 const shareTwitterBtn = document.getElementById('share-twitter');
 const shareFacebookBtn = document.getElementById('share-facebook');
@@ -243,6 +244,7 @@ function startGame() {
     if (gameState === 'start') {
         console.log("Starting game...");
         gameState = 'playing';
+        window.dispatchEvent(new Event('flappyflopper:start'));
         startScreen.classList.remove('visible');
         scoreDisplay.style.display = 'block';
         player.velocityY = lift; // Initial lift
@@ -387,10 +389,38 @@ if (hitboxToggleCheckbox) { hitboxToggleCheckbox.addEventListener('change', hand
 if (muteToggleCheckbox) { muteToggleCheckbox.addEventListener('change', handleMuteToggleChange); } else { console.error("Mute toggle checkbox not found!"); }
 
 // --- Share Functionality --- (Keep existing: prepareShareData, handleNativeShare, copyShareLink, listeners)
+async function handleShare() {
+    playSound(clickSound);
+    const shareText = `I drew ${score} fouls in Flappy Flopper! Can you beat me? 🏀🐦⬛ https://greekstreams.github.io/flappyflopper/ #FlappyFlopper #EuroLeague`;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: 'Flappy Flopper', text: shareText });
+            return;
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+        }
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+            await navigator.clipboard.writeText(shareText);
+            if (copyFeedbackEl) {
+                copyFeedbackEl.textContent = 'Copied to clipboard!';
+                copyFeedbackEl.classList.add('visible');
+                setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 2000);
+            }
+        } catch (error) {
+            console.error('Clipboard copy failed:', error);
+        }
+    }
+}
+
 function prepareShareData(currentScore) { const text = BASE_SHARE_TEXT.replace('{score}', currentScore); const encodedText = encodeURIComponent(text); const encodedUrl = encodeURIComponent(GAME_URL); if (shareTwitterBtn) { shareTwitterBtn.href = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}&hashtags=${TWITTER_HASHTAGS}`; } if (shareFacebookBtn) { shareFacebookBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"e=${encodedText}`; } if (shareNativeBtn) { shareNativeBtn.dataset.shareTitle = SHARE_TITLE; shareNativeBtn.dataset.shareText = text; shareNativeBtn.dataset.shareUrl = GAME_URL; } }
 async function handleNativeShare(event) { event.preventDefault(); playSound(clickSound); const target = event.currentTarget || event.target; const targetDataset = target?.dataset; if (!targetDataset || !targetDataset.shareText || !targetDataset.shareUrl) { console.error("Share data missing. Re-preparing..."); prepareShareData(score); if (!targetDataset.shareText || !targetDataset.shareUrl) { console.error('Still missing share data.'); if(copyFeedbackEl){ copyFeedbackEl.textContent = 'Share Error!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 2000); } return; } } const shareData = { title: targetDataset.shareTitle || document.title, text: targetDataset.shareText, url: targetDataset.shareUrl }; console.log("Attempting Web Share:", shareData); try { await navigator.share(shareData); console.log('Shared successfully'); } catch (err) { console.error('Error sharing:', err); if (copyFeedbackEl && err.name !== 'AbortError'){ copyFeedbackEl.textContent = 'Share failed!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 2000); } } }
 function copyShareLink(event) { event.preventDefault(); event.stopPropagation(); playSound(clickSound); prepareShareData(score); const textToCopy = (shareNativeBtn?.dataset?.shareText || BASE_SHARE_TEXT.replace('{score}', score)) + ` Play here: ${GAME_URL}`; if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(textToCopy).then(() => { if(copyFeedbackEl){ copyFeedbackEl.textContent = 'Copied!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); } console.log('Copied via Clipboard API.'); }).catch(err => { console.error('Clipboard API copy failed: ', err); if(copyFeedbackEl){ copyFeedbackEl.textContent = 'Copy Error!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); } }); } else { console.warn("Using fallback copy method."); try { const textArea = document.createElement("textarea"); textArea.value = textToCopy; textArea.style.position = "fixed"; textArea.style.left = "-9999px"; textArea.style.top = "0"; document.body.appendChild(textArea); textArea.focus(); textArea.select(); const successful = document.execCommand('copy'); document.body.removeChild(textArea); if (successful) { if(copyFeedbackEl){ copyFeedbackEl.textContent = 'Copied! (fallback)'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); } console.log('Copied via fallback.'); } else { throw new Error('execCommand failed'); } } catch (err) { console.error('Fallback copy failed: ', err); if(copyFeedbackEl){ copyFeedbackEl.textContent = 'Copy Error!'; copyFeedbackEl.classList.add('visible'); setTimeout(() => { copyFeedbackEl.classList.remove('visible'); }, 1500); } } } }
 // Add Share Listeners
+if (shareBtn) { shareBtn.addEventListener('click', handleShare); }
 if (navigator.share && typeof navigator.share === 'function' && shareNativeBtn) { shareNativeBtn.addEventListener('click', handleNativeShare); }
 if (shareTwitterBtn) { shareTwitterBtn.addEventListener('click', (e) => { playSound(clickSound); prepareShareData(score); }); } else { console.error("Twitter Share button not found!"); }
 if (shareFacebookBtn) { shareFacebookBtn.addEventListener('click', (e) => { playSound(clickSound); prepareShareData(score); }); } else { console.error("Facebook Share button not found!"); }
