@@ -324,7 +324,32 @@ function drawObstacles() { obstacles.forEach(obstacle => { const currentTopHeigh
 function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); drawBackground(); drawObstacles(); if (player) { drawPlayer(); } }
 
 // --- gameLoop function ---
-function gameLoop() { if (gameState !== 'playing') return; update(); draw(); requestAnimationFrame(gameLoop); }
+const FIXED_STEP_MS = 1000 / 60;
+const MAX_FRAME_DELTA_MS = FIXED_STEP_MS * 5;
+let lastFrameTime = null;
+let accumulator = 0;
+
+function gameLoop(timestamp = performance.now()) {
+    if (gameState !== 'playing') return;
+    if (lastFrameTime === null) lastFrameTime = timestamp;
+
+    const elapsed = Math.min(timestamp - lastFrameTime, MAX_FRAME_DELTA_MS);
+    lastFrameTime = timestamp;
+    accumulator = Math.min(accumulator + elapsed, MAX_FRAME_DELTA_MS);
+
+    while (accumulator >= FIXED_STEP_MS && gameState === 'playing') {
+        update();
+        accumulator -= FIXED_STEP_MS;
+    }
+
+    draw();
+    if (gameState === 'playing') {
+        requestAnimationFrame(gameLoop);
+    } else {
+        lastFrameTime = null;
+        accumulator = 0;
+    }
+}
 
 // --- Event Listeners ---
 function handleInput(event) { event.preventDefault(); if (gameState === 'start') { if (!isMuted && backgroundMusic.paused) { backgroundMusic.play().catch(e => { if (e.name !== 'NotAllowedError') console.log("Initial music play failed on input:", e); }); } startGame(); } else if (gameState === 'playing') { playerFlop(); } }
