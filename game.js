@@ -1,6 +1,23 @@
 // --- Get DOM Elements ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const GAME_WIDTH = canvas.width;
+const GAME_HEIGHT = canvas.height;
+function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const backingWidth = Math.max(1, Math.round(rect.width * dpr));
+    const backingHeight = Math.max(1, Math.round(rect.height * dpr));
+
+    if (canvas.width !== backingWidth || canvas.height !== backingHeight) {
+        canvas.width = backingWidth;
+        canvas.height = backingHeight;
+    }
+
+    ctx.setTransform(canvas.width / GAME_WIDTH, 0, 0, canvas.height / GAME_HEIGHT, 0, 0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 const scoreDisplay = document.getElementById('score-display');
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
@@ -81,7 +98,7 @@ const MAX_SCORE_FOR_DIFFICULTY = 45;
 // Obstacle settings
 const OBSTACLE_WIDTH = 114; const OBSTACLE_IMG_HEIGHT = 350;
 // Dynamic Gap Size
-const INITIAL_GAP_HEIGHT = 190; const FINAL_GAP_HEIGHT = 140; const MIN_OBSTACLE_Y_MARGIN = 50; const MAX_GAP_TOP_Y = canvas.height - FINAL_GAP_HEIGHT - MIN_OBSTACLE_Y_MARGIN;
+const INITIAL_GAP_HEIGHT = 190; const FINAL_GAP_HEIGHT = 140; const MIN_OBSTACLE_Y_MARGIN = 50; const MAX_GAP_TOP_Y = GAME_HEIGHT - FINAL_GAP_HEIGHT - MIN_OBSTACLE_Y_MARGIN;
 // Dynamic Obstacle Spacing
 const INITIAL_SPAWN_RATE = 180; const FINAL_SPAWN_RATE = 110;
 
@@ -189,7 +206,7 @@ function initGame() {
     loadGameState(); // Load saved states
 
     // Reset game variables
-    player = { x: 50, y: canvas.height / 2 - PLAYER_HEIGHT / 2, width: PLAYER_WIDTH, height: PLAYER_HEIGHT, velocityY: 0, scale: 1 }; // Removed firstFlopDone
+    player = { x: 50, y: GAME_HEIGHT / 2 - PLAYER_HEIGHT / 2, width: PLAYER_WIDTH, height: PLAYER_HEIGHT, velocityY: 0, scale: 1 }; // Removed firstFlopDone
     obstacles = []; score = 0; gravity = 0.25; lift = -6; gameSpeed = 1.8; gameState = 'start'; frameCount = 0; sourceBackgroundX = 0; backgroundDirection = 1;
 
     // Reset UI Elements
@@ -218,7 +235,7 @@ function initGame() {
     }
 
     // Initial draw
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
     drawBackground();
 }
 
@@ -277,9 +294,9 @@ function update() {
     if (gameState !== 'playing') return;
 
     // Background Panning
-    if (backgroundImg.complete && backgroundImg.naturalWidth > 0 && backgroundImg.naturalHeight > 0) { const bgScaleFactor = canvas.height / backgroundImg.naturalHeight; const sourceDrawWidth = canvas.width / bgScaleFactor; if (backgroundImg.naturalWidth > sourceDrawWidth) { let panAmount = gameSpeed * BACKGROUND_PAN_SPEED_FACTOR * backgroundDirection; sourceBackgroundX += panAmount; const maxSourceX = backgroundImg.naturalWidth - sourceDrawWidth; if (sourceBackgroundX >= maxSourceX) { sourceBackgroundX = maxSourceX; backgroundDirection = -1; } else if (sourceBackgroundX <= 0) { sourceBackgroundX = 0; backgroundDirection = 1; } } else { sourceBackgroundX = Math.max(0, (backgroundImg.naturalWidth - sourceDrawWidth) / 2); } }
+    if (backgroundImg.complete && backgroundImg.naturalWidth > 0 && backgroundImg.naturalHeight > 0) { const bgScaleFactor = GAME_HEIGHT / backgroundImg.naturalHeight; const sourceDrawWidth = GAME_WIDTH / bgScaleFactor; if (backgroundImg.naturalWidth > sourceDrawWidth) { let panAmount = gameSpeed * BACKGROUND_PAN_SPEED_FACTOR * backgroundDirection; sourceBackgroundX += panAmount; const maxSourceX = backgroundImg.naturalWidth - sourceDrawWidth; if (sourceBackgroundX >= maxSourceX) { sourceBackgroundX = maxSourceX; backgroundDirection = -1; } else if (sourceBackgroundX <= 0) { sourceBackgroundX = 0; backgroundDirection = 1; } } else { sourceBackgroundX = Math.max(0, (backgroundImg.naturalWidth - sourceDrawWidth) / 2); } }
     // Player Physics
-    player.velocityY += gravity; player.y += player.velocityY; if (player.y < 0) { player.y = 0; player.velocityY = 0; } if (player.y + player.height > canvas.height) { player.y = canvas.height - player.height; endGame(); return; } if (player.scale > 1) { player.scale -= 0.05; if (player.scale < 1) player.scale = 1; } else { player.scale = 1; }
+    player.velocityY += gravity; player.y += player.velocityY; if (player.y < 0) { player.y = 0; player.velocityY = 0; } if (player.y + player.height > GAME_HEIGHT) { player.y = GAME_HEIGHT - player.height; endGame(); return; } if (player.scale > 1) { player.scale -= 0.05; if (player.scale < 1) player.scale = 1; } else { player.scale = 1; }
     // Difficulty Progression & Spawn Rate
     const difficultyProgress = Math.min(1, score / MAX_SCORE_FOR_DIFFICULTY); const currentSpawnRate = Math.round(lerp(INITIAL_SPAWN_RATE, FINAL_SPAWN_RATE, difficultyProgress));
 
@@ -313,15 +330,15 @@ function update() {
     }
 
     // Spawn New Obstacles
-    if (frameCount % currentSpawnRate === 0) { const currentGapHeight = lerp(INITIAL_GAP_HEIGHT, FINAL_GAP_HEIGHT, difficultyProgress); const topGapY = Math.random() * (MAX_GAP_TOP_Y - MIN_OBSTACLE_Y_MARGIN) + MIN_OBSTACLE_Y_MARGIN; const bottomGapY = topGapY + currentGapHeight; const topImageActualHeight = obstacleTopImg.naturalHeight || OBSTACLE_IMG_HEIGHT; const bottomImageActualHeight = obstacleBottomImg.naturalHeight || OBSTACLE_IMG_HEIGHT; const topImageY = topGapY - topImageActualHeight; const bottomImageY = bottomGapY; obstacles.push({ x: canvas.width, width: OBSTACLE_WIDTH, baseTopY: topImageY, topImageHeight: topImageActualHeight, baseBottomY: bottomImageY, bottomImageHeight: bottomImageActualHeight, currentTopImageY: topImageY, currentBottomImageY: bottomImageY, passed: false, hitboxRects: [{}, {}] }); }
+    if (frameCount % currentSpawnRate === 0) { const currentGapHeight = lerp(INITIAL_GAP_HEIGHT, FINAL_GAP_HEIGHT, difficultyProgress); const topGapY = Math.random() * (MAX_GAP_TOP_Y - MIN_OBSTACLE_Y_MARGIN) + MIN_OBSTACLE_Y_MARGIN; const bottomGapY = topGapY + currentGapHeight; const topImageActualHeight = obstacleTopImg.naturalHeight || OBSTACLE_IMG_HEIGHT; const bottomImageActualHeight = obstacleBottomImg.naturalHeight || OBSTACLE_IMG_HEIGHT; const topImageY = topGapY - topImageActualHeight; const bottomImageY = bottomGapY; obstacles.push({ x: GAME_WIDTH, width: OBSTACLE_WIDTH, baseTopY: topImageY, topImageHeight: topImageActualHeight, baseBottomY: bottomImageY, bottomImageHeight: bottomImageActualHeight, currentTopImageY: topImageY, currentBottomImageY: bottomImageY, passed: false, hitboxRects: [{}, {}] }); }
     frameCount++;
 }
 
 // --- Drawing Functions --- (Keep existing: drawBackground, drawPlayer, drawObstacles, draw)
-function drawBackground() { if (backgroundImg.complete && backgroundImg.naturalWidth > 0 && backgroundImg.naturalHeight > 0) { const bgScaleFactor = canvas.height / backgroundImg.naturalHeight; const sourceDrawWidth = canvas.width / bgScaleFactor; let clampedSourceX = Math.max(0, sourceBackgroundX); if (backgroundImg.naturalWidth > sourceDrawWidth) { clampedSourceX = Math.min(clampedSourceX, backgroundImg.naturalWidth - sourceDrawWidth); } else { clampedSourceX = Math.max(0, (backgroundImg.naturalWidth - sourceDrawWidth) / 2); } ctx.drawImage( backgroundImg, clampedSourceX, 0, sourceDrawWidth, backgroundImg.naturalHeight, 0, 0, canvas.width, canvas.height ); ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; ctx.fillRect(0, 0, canvas.width, canvas.height); } else { const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height); gradient.addColorStop(0, "#282c34"); gradient.addColorStop(1, "#1f232a"); ctx.fillStyle = gradient; ctx.fillRect(0, 0, canvas.width, canvas.height); } }
+function drawBackground() { if (backgroundImg.complete && backgroundImg.naturalWidth > 0 && backgroundImg.naturalHeight > 0) { const bgScaleFactor = GAME_HEIGHT / backgroundImg.naturalHeight; const sourceDrawWidth = GAME_WIDTH / bgScaleFactor; let clampedSourceX = Math.max(0, sourceBackgroundX); if (backgroundImg.naturalWidth > sourceDrawWidth) { clampedSourceX = Math.min(clampedSourceX, backgroundImg.naturalWidth - sourceDrawWidth); } else { clampedSourceX = Math.max(0, (backgroundImg.naturalWidth - sourceDrawWidth) / 2); } ctx.drawImage( backgroundImg, clampedSourceX, 0, sourceDrawWidth, backgroundImg.naturalHeight, 0, 0, GAME_WIDTH, GAME_HEIGHT ); ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT); } else { const gradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT); gradient.addColorStop(0, "#282c34"); gradient.addColorStop(1, "#1f232a"); ctx.fillStyle = gradient; ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT); } }
 function drawPlayer() { if (!player) return; if (playerImg.complete && playerImg.naturalWidth !== 0) { const scaledWidth = player.width * player.scale; const scaledHeight = player.height * player.scale; ctx.save(); ctx.translate(player.x + player.width / 2, player.y + player.height / 2); let angle = Math.max(-Math.PI / 6, Math.min(Math.PI / 4, player.velocityY * 0.08)); ctx.rotate(angle); ctx.drawImage(playerImg, -scaledWidth / 2, -scaledHeight / 2, scaledWidth, scaledHeight); ctx.restore(); } else { ctx.fillStyle = 'red'; ctx.fillRect(player.x, player.y, player.width, player.height); } if (showHitboxes) { ctx.strokeStyle = 'rgba(0, 255, 0, 0.7)'; ctx.lineWidth = 1; ctx.strokeRect(player.x, player.y, player.width, player.height); } }
 function drawObstacles() { obstacles.forEach(obstacle => { const currentTopHeight = obstacle.topImageHeight || OBSTACLE_IMG_HEIGHT; const currentBottomHeight = obstacle.bottomImageHeight || OBSTACLE_IMG_HEIGHT; if (obstacleTopImg.complete && obstacleTopImg.naturalWidth > 0) { ctx.drawImage(obstacleTopImg, obstacle.x, obstacle.currentTopImageY, obstacle.width, currentTopHeight); } else { ctx.fillStyle = '#D2691E'; ctx.fillRect(obstacle.x, obstacle.currentTopImageY, obstacle.width, currentTopHeight); } if (obstacleBottomImg.complete && obstacleBottomImg.naturalWidth > 0) { ctx.drawImage(obstacleBottomImg, obstacle.x, obstacle.currentBottomImageY, obstacle.width, currentBottomHeight); } else { ctx.fillStyle = '#D2691E'; ctx.fillRect(obstacle.x, obstacle.currentBottomImageY, obstacle.width, currentBottomHeight); } if (showHitboxes && obstacle.hitboxRects && obstacle.hitboxRects.length === 2) { ctx.fillStyle = 'rgba(255, 0, 0, 0.4)'; if (obstacle.hitboxRects[0] && typeof obstacle.hitboxRects[0].width === 'number') { ctx.fillRect(obstacle.hitboxRects[0].x, obstacle.hitboxRects[0].y, obstacle.hitboxRects[0].width, obstacle.hitboxRects[0].height); } if (obstacle.hitboxRects[1] && typeof obstacle.hitboxRects[1].width === 'number') { ctx.fillRect(obstacle.hitboxRects[1].x, obstacle.hitboxRects[1].y, obstacle.hitboxRects[1].width, obstacle.hitboxRects[1].height); } } }); }
-function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); drawBackground(); drawObstacles(); if (player) { drawPlayer(); } }
+function draw() { ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT); drawBackground(); drawObstacles(); if (player) { drawPlayer(); } }
 
 // --- gameLoop function ---
 const FIXED_STEP_MS = 1000 / 60;
