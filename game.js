@@ -61,6 +61,28 @@ const crashSound = new Audio('sounds/crash.mp3');
 const clickSound = new Audio('sounds/click.wav');
 const backgroundMusic = new Audio('sounds/music.mp3');
 backgroundMusic.loop = true;
+let audioContext = null;
+const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+if (AudioContextConstructor) {
+    try {
+        audioContext = new AudioContextConstructor();
+        audioContext.createMediaElementSource(backgroundMusic).connect(audioContext.destination);
+    } catch (error) {
+        audioContext = null;
+        console.warn('Web Audio is unavailable; using direct audio playback:', error);
+    }
+}
+
+function resumeAudioContext() {
+    if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().catch(error => {
+            console.warn('AudioContext resume failed:', error);
+        });
+    }
+}
+
+window.addEventListener('pointerdown', resumeAudioContext, true);
+window.addEventListener('keydown', resumeAudioContext, true);
 
 let assetsLoaded = 0;
 let totalAssets = 4; // Count only essential images
