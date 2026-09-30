@@ -80,24 +80,18 @@
                     </div>
                     <!-- Game Over Screen -->
                     <div id="game-over-screen" class="overlay">
-                        <h2 id="game-over-message">Game Over!</h2>
-                        <p>Fouls Drawn: <span id="final-score">0</span></p>
-                        <p id="high-score-display-end">Your Best: 0</p>
-                        <button id="restart-button" class="game-button">Restart</button>
-                        <!-- [ADSENSE] Rewarded continuation -->
-                        <button id="reward-continue-button" class="game-button hidden">Watch an ad to continue from your last score</button>
-                        <!-- [/ADSENSE] -->
-                        <button id="share-btn" class="game-button">Share Score</button>
-                        <div class="share-section">
-                            <p>Share Score:</p>
-                            <button id="share-native" class="share-button native-share hidden">
-                                <i class="fas fa-share-alt"></i> Share
-                            </button>
-                            <a href="#" id="share-twitter" class="share-button twitter fallback-share hidden" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
-                            <a href="#" id="share-facebook" class="share-button facebook fallback-share hidden" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-                            <button id="copy-link" class="share-button copy"><i class="fas fa-link"></i></button>
-                            <span id="copy-feedback" class="copy-feedback"></span>
-                        </div>
+                        <section class="game-over-card" role="dialog" aria-modal="true" aria-labelledby="game-over-message">
+                            <h2 id="game-over-message">Game Over!</h2>
+                            <p class="game-over-score">Fouls Drawn: <span id="final-score">0</span></p>
+                            <p id="high-score-display-end">Your Best: 0</p>
+                            <div class="game-over-actions">
+                                <button id="restart-button" class="game-button game-over-restart">Restart</button>
+                                <button id="share-btn" class="game-button game-over-share">Share Score</button>
+                                <!-- [ADSENSE] Rewarded continuation -->
+                                <button id="reward-continue-button" class="game-over-reward hidden">Watch an ad to continue from your last score</button>
+                                <!-- [/ADSENSE] -->
+                            </div>
+                        </section>
                     </div>
                     <!-- Score Display (inside game-container) -->
                     <div id="score-display">Fouls Drawn: 0</div>
@@ -108,24 +102,6 @@
                         <p id="achievement-desc"></p> <!-- Can display secondary message or be empty -->
                     </div>
                 </div><!-- End #game-container -->
-
-                <!-- Toggle Switch Container (Existing for Hitbox) -->
-                <div class="toggle-switch-container">
-                    <label for="hitboxToggle" class="toggle-label">Show Hitboxes (Easier):</label>
-                    <label class="switch">
-                        <input type="checkbox" id="hitboxToggle">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-
-                <!-- Toggle Switch Container for Mute -->
-                <div class="toggle-switch-container">
-                    <label for="muteToggle" class="toggle-label">Mute Sound:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="muteToggle">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
 
             </div><!-- End .game-column -->
 
@@ -145,6 +121,22 @@
         </main>
 
         <footer class="main-footer">
+            <div class="game-settings-footer" role="group" aria-label="Game settings">
+                <div class="toggle-switch-container">
+                    <label for="hitboxToggle" class="toggle-label">Show Hitboxes (Easier):</label>
+                    <label class="switch">
+                        <input type="checkbox" id="hitboxToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch-container">
+                    <label for="muteToggle" class="toggle-label">Mute Sound:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="muteToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
             <div class="container">
                 <p>© 2025 Flappy Flopper. All Rights Reserved (Probably). | <a href="privacy.html">Privacy Policy</a></p>
             </div>
